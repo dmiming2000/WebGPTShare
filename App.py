@@ -346,7 +346,9 @@ post_backend_api_conversation(JSON.parse(arguments[0]),arguments[1]);
                 self.page.run_js(f'window[\'__{websocket_request_id.replace("-","")}\'] = null;')
                 break
             time.sleep(1)
-
+        if q == "{}":
+            self.page.refresh(ignore_cache=True)
+            self.page.wait.doc_loaded()
         return q
 
 
@@ -378,7 +380,7 @@ def main():
     gpt = GptWeb(1)
     app = make_app(gpt)
     app.listen(9999)
-    print("Server is running on http://localhost:9999")
+    print("Server is running on http://0.0.0.0:9999")
     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
