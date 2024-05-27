@@ -15866,6 +15866,7 @@
       //   , h = A(16602)
       //   , x = A(8025)
       //   , f = A(45232);
+      var  g2 = A(40124);
       window.test1 = en;
       window.test2 = ee;
       window.test3 = eo;
@@ -15875,6 +15876,11 @@
       window.test10 = async function (e, t, A,websocket_request_id) {
         let $ = J2.g.getTracer("completion"),
           ee = (e) => (null == e ? void 0 : e.code) === "challenge_required";
+        t =ev.handleResponse;
+
+         A =   (e, t) => {
+              (0, g2.F4)(eu, t, e, ei);
+            }
         let a = async function () {
           // Define variables and constants
           var i, n, r, o;
@@ -15965,6 +15971,7 @@
                     );
                   });
             }
+            console.log(e);
             return e;
           }
           let y = "".concat(v, "/conversation"),
@@ -15984,6 +15991,8 @@
 
           function Q(e) {
             if ("[DONE]" === e.data) {
+                console.log("__"+websocket_request_id.replace("-",""));
+                window["__"+websocket_request_id.replaceAll("-","")] = window["temp"+websocket_request_id.replaceAll("-","")]
               c.abort();
               t({ type: "done" });
             } else if ("ping" === e.event) {
@@ -15991,6 +16000,7 @@
             } else {
               try {
                 let A = JSON.parse(e.data);
+                window["temp"+websocket_request_id.replaceAll("-","")] = A;
                 if (A.error) {
                   let e = new k.Q0(A.error);
                   throw (t({ type: "error", error: e }), e);
@@ -16085,6 +16095,7 @@
                         ? i
                         : null;
                   if (a.ok && u.includes("text/event-stream")) {
+
                     (I = !1), A(g, e.model);
                     return;
                   }
