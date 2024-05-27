@@ -15895,7 +15895,7 @@
               "continueFromSharedConversationId" in e
                 ? e.continueFromSharedConversationId
                 : void 0,
-            m = websocket_request_id,
+            m = window.test11.Z(),
             p = {
               // Initialize the 'p' object with various properties
               action: e.completionType,
@@ -15991,7 +15991,7 @@
 
           function Q(e) {
             if ("[DONE]" === e.data) {
-                console.log("__"+websocket_request_id.replace("-",""));
+                console.log("__"+websocket_request_id.replaceAll("-",""));
                 window["__"+websocket_request_id.replaceAll("-","")] = window["temp"+websocket_request_id.replaceAll("-","")]
               c.abort();
               t({ type: "done" });
@@ -16064,10 +16064,8 @@
           }
           let I = null,
             D = setTimeout(() => {
-              !0 === I
-                ? h.A.logEvent(x.M.asyncResponseWaitTooLong, {})
-                : !1 === I && h.A.logEvent(x.M.sseResponseWaitTooLong, {});
-            }, 3e4);
+              console.log("Error TimeOut .");
+            }, 3e400);
           return (
             (0, G2.iF)(m, Q, c.signal),
             K2.D.with(M, () =>
@@ -16111,12 +16109,18 @@
                       } = (0, G2.IP)(s);
                     if (null != i && null != m && null != p && null != x && h) {
                       (I = !0), A(g, e.model);
+                      function delay(ms) {
+                          return new Promise(resolve => setTimeout(resolve, ms));
+                      }
                       try {
+                          //网速不好需要延迟
+                          await delay(5000);
+
                         await (0, G2.fg)(i, u, h, m, p, x, Q, c.signal, D);
                       } catch (e) {
                         e instanceof k.Q0 && t({ type: "error", error: e });
                       }
-                      throw new et();
+                      // throw new et();
                     }
                     {
                       let e =
@@ -16214,7 +16218,7 @@
                   t.status
                 );
               }
-              // t instanceof et || O.U.addError(t);
+              t instanceof et || O.U.addError(t);
             }),
             c
           );

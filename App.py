@@ -22,7 +22,7 @@ class GptWeb(threading.Thread):
 
         request_id = kwargs['requestId']
         request = kwargs.get('request', {})
-        print(f"Intercepted request: {request.get('url')}")
+        # print(f"Intercepted request: {request.get('url')}")
         # print(request)
         if 'responseStatusCode' not in kwargs:
 
@@ -30,18 +30,18 @@ class GptWeb(threading.Thread):
                 self.page.run_cdp('Fetch.continueRequest', requestId=request_id)
             except:
                 pass
-        elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/vendor" in request.get('url', ''):
-            print(f"Intercepted JS file: {request.get('url')}")
-            with open('replace.js', 'r', encoding='utf-8') as file:
-                file_content = file.read()
-
-
-            encoded_body = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
-            try:
-                self.page.run_cdp('Fetch.fulfillRequest', requestId=request_id, responseCode=200, body=encoded_body,
-                                  responseHeaders=kwargs.get('responseHeaders', []))
-            except Exception as e:
-                print(f"Error fulfilling request: {e}")
+        # elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/vendor" in request.get('url', ''):
+        #     print(f"Intercepted JS file: {request.get('url')}")
+        #     with open('replace.js', 'r', encoding='utf-8') as file:
+        #         file_content = file.read()
+        #
+        #
+        #     encoded_body = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
+        #     try:
+        #         self.page.run_cdp('Fetch.fulfillRequest', requestId=request_id, responseCode=200, body=encoded_body,
+        #                           responseHeaders=kwargs.get('responseHeaders', []))
+        #     except Exception as e:
+        #         print(f"Error fulfilling request: {e}")
         elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/4237-60015b3cf7228154" in request.get('url', ''):
 
                 print(f"Intercepted JS file: {request.get('url')}")
@@ -328,10 +328,10 @@ post_backend_api_conversation(JSON.parse(arguments[0]),arguments[1]);
         '''
         decoded_data = body.decode('utf-8')
         message = json.loads(decoded_data)
-        if 'messages' in message:
-            for i in range(len(message['messages'])):
-                if 'content' in message['messages'][i] and 'parts' in message['messages'][i]['content']:
-                    message['messages'][i]['content']['parts'][0] = message['messages'][i]['content']['parts'][0].encode('utf-8').decode('unicode_escape')
+        # if 'messages' in message:
+        #     for i in range(len(message['messages'])):
+        #         if 'content' in message['messages'][i] and 'parts' in message['messages'][i]['content']:
+        #             message['messages'][i]['content']['parts'][0] = message['messages'][i]['content']['parts'][0].encode('utf-8').decode('unicode_escape')
 
         data_js = json.dumps(message).replace("False", "false").replace("True", "true")
         print(data_js)
