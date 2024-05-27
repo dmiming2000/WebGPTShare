@@ -16178,7 +16178,7 @@
                 },
                 onerror(e) {
                      console.log("websocket_request_id Error 001: " ,websocket_request_id,e);
-                     window["__"+data.websocket_request_id.replaceAll("-","")] = "{}";
+                     window["__"+websocket_request_id.replaceAll("-","")] = "{}";
                   var A;
                   let a = e instanceof Error ? e : Error(JSON.stringify(e));
                   if (a instanceof et || I || (ee(a) && !d)) throw a;
