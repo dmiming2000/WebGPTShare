@@ -338,19 +338,26 @@ post_backend_api_conversation(JSON.parse(arguments[0]),arguments[1]);
 
         self.page.run_js(js_code, data_js,websocket_request_id)
         q = '{}'
-        while True:
-            s = self.page.run_js(f'return window[\'__{websocket_request_id.replace("-","")}\'];')
-            print([f'__{websocket_request_id.replace("-","")}'])
-            if s:
-                q = s
-                self.page.run_js(f'window[\'__{websocket_request_id.replace("-","")}\'] = null;')
-                break
-            time.sleep(1)
-        if q == "{}":
-            self.page.refresh(ignore_cache=True)
-            self.page.wait.doc_loaded()
-        return q
-
+        i = 0
+        try:
+            while True:
+                s = self.page.run_js(f'return window[\'__{websocket_request_id.replace("-","")}\'];')
+                print([f'__{websocket_request_id.replace("-","")}'])
+                i += 1
+                if i > 60:
+                    q = "{ }"
+                    break
+                if s:
+                    q = s
+                    self.page.run_js(f'window[\'__{websocket_request_id.replace("-","")}\'] = null;')
+                    break
+                time.sleep(1)
+            if q == "{}":
+                self.page.refresh(ignore_cache=True)
+                self.page.wait.doc_loaded()
+            return q
+        except:
+            return "{}"
 
 
 class BackendApiConversationHandler(tornado.web.RequestHandler):
