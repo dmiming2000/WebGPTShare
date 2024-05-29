@@ -42,7 +42,7 @@ class GptWeb(threading.Thread):
         #                           responseHeaders=kwargs.get('responseHeaders', []))
         #     except Exception as e:
         #         print(f"Error fulfilling request: {e}")
-        elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/4237-60015b3cf7228154" in request.get('url', ''):
+        elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/4237" in request.get('url', ''):
 
                 print(f"Intercepted JS file: {request.get('url')}")
                 with open('fe.js', 'r', encoding='utf-8') as file:
