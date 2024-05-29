@@ -22,26 +22,12 @@ class GptWeb(threading.Thread):
 
         request_id = kwargs['requestId']
         request = kwargs.get('request', {})
-        # print(f"Intercepted request: {request.get('url')}")
-        # print(request)
         if 'responseStatusCode' not in kwargs:
 
             try:
                 self.page.run_cdp('Fetch.continueRequest', requestId=request_id)
             except:
                 pass
-        # elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/vendor" in request.get('url', ''):
-        #     print(f"Intercepted JS file: {request.get('url')}")
-        #     with open('replace.js', 'r', encoding='utf-8') as file:
-        #         file_content = file.read()
-        #
-        #
-        #     encoded_body = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
-        #     try:
-        #         self.page.run_cdp('Fetch.fulfillRequest', requestId=request_id, responseCode=200, body=encoded_body,
-        #                           responseHeaders=kwargs.get('responseHeaders', []))
-        #     except Exception as e:
-        #         print(f"Error fulfilling request: {e}")
         elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/4237" in request.get('url', ''):
 
                 print(f"Intercepted JS file: {request.get('url')}")
