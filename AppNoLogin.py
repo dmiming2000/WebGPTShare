@@ -340,7 +340,7 @@ post_backend_api_conversation(JSON.parse(arguments[0]),arguments[1]);
         self.page.run_js(js_code, data_js, websocket_request_id)
         q = '{}'
         i = 0
-        if "Just" in self.page.title:
+        if "Just" in self.page.title or "Login" in self.page.title:
             self.init_page()
             return "{}"
         try:
