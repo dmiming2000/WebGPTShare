@@ -19,6 +19,7 @@ class GptWeb(threading.Thread):
     def __init__(self, thread_id):
         threading.Thread.__init__(self)
         self.page = None
+        self.port = 1030
         self.init_page()
 
     def on_request_paused(self, **kwargs):
@@ -33,18 +34,7 @@ class GptWeb(threading.Thread):
                 self.page.run_cdp('Fetch.continueRequest', requestId=request_id)
             except:
                 pass
-        # elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/vendor" in request.get('url', ''):
-        #     print(f"Intercepted JS file: {request.get('url')}")
-        #     with open('replace.js', 'r', encoding='utf-8') as file:
-        #         file_content = file.read()
-        #
-        #
-        #     encoded_body = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
-        #     try:
-        #         self.page.run_cdp('Fetch.fulfillRequest', requestId=request_id, responseCode=200, body=encoded_body,
-        #                           responseHeaders=kwargs.get('responseHeaders', []))
-        #     except Exception as e:
-        #         print(f"Error fulfilling request: {e}")
+
         elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/4237" in request.get('url', ''):
 
             print(f"Intercepted JS file: {request.get('url')}")
@@ -73,6 +63,11 @@ class GptWeb(threading.Thread):
         url = f"https://chatgpt.com/?oai-dm=1"
         co = ChromiumOptions()
         so = SessionOptions()
+        # self.port = self.port + 1
+        # if self.port > 1050:
+        #     self.port = 1030
+        # self.proxy = f'127.0.0.1:{self.port}'
+        # co.set_proxy(f'http://{self.proxy}')
         co.auto_port(True)
         co.set_argument('--disable-web-security')
         co.incognito()
@@ -345,6 +340,9 @@ post_backend_api_conversation(JSON.parse(arguments[0]),arguments[1]);
         self.page.run_js(js_code, data_js, websocket_request_id)
         q = '{}'
         i = 0
+        if "Just" in self.page.title:
+            self.init_page()
+            return "{}"
         try:
             while True:
                 s = self.page.run_js(f'return window[\'__{websocket_request_id.replace("-", "")}\'];')
@@ -359,7 +357,7 @@ post_backend_api_conversation(JSON.parse(arguments[0]),arguments[1]);
                     break
                 time.sleep(1)
             if q == "{}":
-                self.page.init_page()
+                self.init_page()
             return q
         except:
             return "{}"
