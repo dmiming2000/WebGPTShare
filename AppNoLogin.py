@@ -38,10 +38,13 @@ class GptWeb(threading.Thread):
         elif kwargs.get('responseStatusCode') == 200 and "/_next/static/chunks/4237" in request.get('url', ''):
 
             print(f"Intercepted JS file: {request.get('url')}")
-            with open('fe.js', 'r', encoding='utf-8') as file:
+            response = self.page.run_cdp('Fetch.getResponseBody', requestId=request_id)
+            original_body = response['body']
+            with open('replace.js', 'r', encoding='utf-8') as file:
                 file_content = file.read()
-
-            encoded_body = base64.b64encode(file_content.encode('utf-8')).decode('utf-8')
+            decoded_body = base64.b64decode(original_body).decode('utf-8')
+            decoded_body = decoded_body.replace("A(43446);", "A(43446);" + file_content)
+            encoded_body = base64.b64encode(decoded_body.encode('utf-8')).decode('utf-8')
             try:
                 self.page.run_cdp('Fetch.fulfillRequest', requestId=request_id, responseCode=200, body=encoded_body,
                                   responseHeaders=kwargs.get('responseHeaders', []))
@@ -66,7 +69,7 @@ class GptWeb(threading.Thread):
         # self.port = self.port + 1
         # if self.port > 1050:
         #     self.port = 1030
-        # self.proxy = f'127.0.0.1:{self.port}'
+        # self.proxy = f'207.229.93.68:{self.port}'
         # co.set_proxy(f'http://{self.proxy}')
         co.auto_port(True)
         co.set_argument('--disable-web-security')
@@ -241,124 +244,124 @@ class GptWeb(threading.Thread):
         return q
 
     async def post_backend_api_conversation(self, body):
-        websocket_request_id = self.page.run_js("return window.test11.Z();")
+        try:
+            if "Just" in self.page.title or "Login" in self.page.title or "error" in self.page.title  or "login" in self.page.url:
+                self.init_page()
+                return "{}"
+            websocket_request_id = uuid.uuid4().hex
 
-        js_code = '''
-        async function post_backend_api_conversation(body,websocket_request_id) {
+            js_code = '''
+            async function post_backend_api_conversation(body,websocket_request_id) {
 
-  let chatreq = await (0, window.test1.rS)();
-  function generateUUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-      /[xy]/g,
-      function (c) {
-        var r = (Math.random() * 16) | 0,
-          v = c == "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      }
-    );
-  }
-  let threadid = generateUUID();
-  let parentMessageId = generateUUID();
-  let id = generateUUID();
-  let arkoseToken = await window.test2.ZP.getEnforcementToken(chatreq);
-  let proofToken = await window.test4.Z.getEnforcementToken(chatreq);
-  let q = {
-    model: "gpt-4o",
-    completionType: "next",
-    historyDisabled: true,
-    parentMessageId: parentMessageId,
-    messages: [
-      {
-        id: id,
-        author: {
-          role: "user",
-        },
-        content: {
-          content_type: "text",
-          parts: ["那个国家最有钱？"],
-        },
-        metadata: {},
-      },
-    ],
-    chatReq: chatreq,
-    arkoseToken: arkoseToken,
-    turnstileToken: null,
-    proofToken: proofToken,
-    completionMetadata: {
-      suggestions: [],
-      conversationMode: {
-        kind: "primary_assistant",
-        plugin_ids: null,
-      },
-    },
-    forceParagen: false,
-    forceParagenModel: "",
-    forceNulligen: false,
-    forceRateLimit: false,
-    resetRateLimits: false,
-  };
-  function replaceValues(target, source) {
-    console.log("target: ",target);
-    console.log("source: ",source);
-    for (let key in source) {
-      if (source.hasOwnProperty(key)) {
-        if (
-          typeof source[key] === "object" &&
-          source[key] !== null &&
-          !Array.isArray(source[key])
-        ) {
-          if (!target[key]) {
-            target[key] = {};
+      let chatreq = await (0, window.test1.rS)();
+      function generateUUID() {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+          /[xy]/g,
+          function (c) {
+            var r = (Math.random() * 16) | 0,
+              v = c == "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
           }
-          replaceValues(target[key], source[key]);
-        } else {
-          target[key] = source[key];
+        );
+      }
+      let threadid = generateUUID();
+      let parentMessageId = generateUUID();
+      let id = generateUUID();
+      let arkoseToken = await window.test2.ZP.getEnforcementToken(chatreq);
+      let proofToken = await window.test4.Z.getEnforcementToken(chatreq);
+      let q = {
+        model: "gpt-4o",
+        completionType: "next",
+        historyDisabled: true,
+        parentMessageId: parentMessageId,
+        messages: [
+          {
+            id: id,
+            author: {
+              role: "user",
+            },
+            content: {
+              content_type: "text",
+              parts: ["那个国家最有钱？"],
+            },
+            metadata: {},
+          },
+        ],
+        chatReq: chatreq,
+        arkoseToken: arkoseToken,
+        turnstileToken: null,
+        proofToken: proofToken,
+        completionMetadata: {
+          suggestions: [],
+          conversationMode: {
+            kind: "primary_assistant",
+            plugin_ids: null,
+          },
+        },
+        forceParagen: false,
+        forceParagenModel: "",
+        forceNulligen: false,
+        forceRateLimit: false,
+        resetRateLimits: false,
+      };
+      function replaceValues(target, source) {
+        console.log("target: ",target);
+        console.log("source: ",source);
+        for (let key in source) {
+          if (source.hasOwnProperty(key)) {
+            if (
+              typeof source[key] === "object" &&
+              source[key] !== null &&
+              !Array.isArray(source[key])
+            ) {
+              if (!target[key]) {
+                target[key] = {};
+              }
+              replaceValues(target[key], source[key]);
+            } else {
+              target[key] = source[key];
+            }
+          }
         }
       }
+
+      replaceValues(q, body);
+      console.log(q);
+      await window.test10(q, null, null,websocket_request_id);
     }
-  }
 
-  replaceValues(q, body);
-  console.log(q);
-  await window.test10(q, null, null,websocket_request_id);
-}
-
-post_backend_api_conversation(JSON.parse(arguments[0]),arguments[1]);
+    post_backend_api_conversation(JSON.parse(arguments[0]),arguments[1]);
 
 
-        '''
-        decoded_data = body.decode('utf-8')
-        message = json.loads(decoded_data)
-        # if 'messages' in message:
-        #     for i in range(len(message['messages'])):
-        #         if 'content' in message['messages'][i] and 'parts' in message['messages'][i]['content']:
-        #             message['messages'][i]['content']['parts'][0] = message['messages'][i]['content']['parts'][0].encode('utf-8').decode('unicode_escape')
+            '''
+            decoded_data = body.decode('utf-8')
+            message = json.loads(decoded_data)
 
-        data_js = json.dumps(message).replace("False", "false").replace("True", "true")
-        print(data_js)
+            data_js = json.dumps(message).replace("False", "false").replace("True", "true")
+            print(data_js)
 
-        self.page.run_js(js_code, data_js, websocket_request_id)
-        q = '{}'
-        i = 0
-        if "Just" in self.page.title or "Login" in self.page.title:
-            self.init_page()
-            return "{}"
-        try:
-            while True:
-                s = self.page.run_js(f'return window[\'__{websocket_request_id.replace("-", "")}\'];')
-                print([f'__{websocket_request_id.replace("-", "")}'])
-                i += 1
-                if i > 60:
-                    q = "{ }"
-                    break
-                if s:
-                    q = s
-                    self.page.run_js(f'window[\'__{websocket_request_id.replace("-", "")}\'] = null;')
-                    break
-                time.sleep(1)
-            if q == "{}":
-                self.init_page()
-            return q
+            self.page.run_async_js(js_code, data_js, websocket_request_id)
+            q = '{}'
+            i = 0
+
+            try:
+                while True:
+                    s = self.page.run_js(f'return window[\'__{websocket_request_id.replace("-", "")}\'];')
+                    print([f'__{websocket_request_id.replace("-", "")}'])
+                    i += 1
+                    if i > 60:
+                        q = "{ }"
+                        break
+                    if s:
+                        q = s
+                        self.page.run_js(f'window[\'__{websocket_request_id.replace("-", "")}\'] = null;')
+                        break
+                    time.sleep(1)
+                if q == "{}":
+                    self.init_page()
+                return q
+            except:
+                return "{}"
         except:
             return "{}"
 
