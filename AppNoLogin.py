@@ -58,28 +58,34 @@ class GptWeb(threading.Thread):
                 pass
 
     def init_page(self):
-        if self.page:
-            self.page.close()
-            self.page.quit()
-            self.page = None
+        while True:
+            if self.page:
+                self.page.close()
+                self.page.quit()
+                self.page = None
 
-        url = f"https://chatgpt.com/?oai-dm=1"
-        co = ChromiumOptions()
-        so = SessionOptions()
-        # self.port = self.port + 1
-        # if self.port > 1050:
-        #     self.port = 1030
-        # self.proxy = f'207.229.93.68:{self.port}'
-        # co.set_proxy(f'http://{self.proxy}')
-        co.auto_port(True)
-        co.set_argument('--disable-web-security')
-        co.incognito()
-        # co.set_browser_path('C:\\Users\\azureuser\\Desktop\\chrome-win64\\chrome.exe')
-        self.page = WebPage(chromium_options=co, session_or_options=so)
-        self.replace_js()
-        self.page.get(url)
-        self.token = None
-        self.page.wait.doc_loaded()
+            url = f"https://chatgpt.com/?oai-dm=1"
+            co = ChromiumOptions()
+            so = SessionOptions()
+            # self.port = self.port + 1
+            # if self.port > 1050:
+            #     self.port = 1030
+            # self.proxy = f'23.225.155.86:{self.port}'
+            # co.set_proxy(f'http://{self.proxy}')
+            co.auto_port(True)
+            # co.set_argument('--disable-web-security')
+            co.incognito()
+            # co.set_browser_path('C:\\Users\\azureuser\\Desktop\\chrome-win64\\chrome.exe')
+            self.page = WebPage(chromium_options=co)
+            self.replace_js()
+            self.page.get(url)
+            self.token = None
+            u = self.page.wait.ele_displayed("@aria-label:Chat history", timeout=60)
+            if u:
+                print("ok.")
+                break
+            else:
+                print("Fail !")
 
     def replace_js(self):
         self.page.run_cdp('Fetch.enable',
@@ -245,7 +251,7 @@ class GptWeb(threading.Thread):
 
     async def post_backend_api_conversation(self, body):
         try:
-            if "Just" in self.page.title or "Login" in self.page.title or "error" in self.page.title  or "login" in self.page.url:
+            if "Just" in self.page.title or "Login" in self.page.title or "error" in self.page.title or "login" in self.page.url:
                 self.init_page()
                 return "{}"
             websocket_request_id = uuid.uuid4().hex
